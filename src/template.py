@@ -32,6 +32,8 @@ class Template:
             self.global_empty_val,
             self.options,
             self.page_dimensions,
+            self.sort_type,
+            self.sort_order,
         ) = map(
             json_object.get,
             [
@@ -43,10 +45,16 @@ class Template:
                 "emptyValue",
                 "options",
                 "pageDimensions",
+                "sortType",
+                "sortOrder"
             ],
         )
 
+        self.sort_type = self.sort_type or "ALPHABETICAL"
+        self.sort_order = self.sort_order or "ASC"
+
         self.parse_output_columns(output_columns_array)
+
         self.setup_pre_processors(pre_processors_object, template_path.parent)
         self.setup_field_blocks(field_blocks_object)
         self.parse_custom_labels(custom_labels_object)
@@ -116,13 +124,55 @@ class Template:
         self.non_custom_labels = self.all_parsed_labels.difference(
             all_parsed_custom_labels
         )
-
+    '''
     def fill_output_columns(self, non_custom_columns, all_custom_columns):
         all_template_columns = non_custom_columns + all_custom_columns
         # Typical case: sort alpha-numerical (natural sort)
         self.output_columns = sorted(
             all_template_columns, key=custom_sort_output_columns
         )
+    '''
+    def fill_output_columns(self, non_custom_columns, all_custom_columns):
+        all_template_columns = non_custom_columns + all_custom_columns
+
+        sort_type = self.sort_type
+        sort_order = self.sort_order
+
+        if sort_type == "CUSTOM":
+            sorted_columns = self.output_columns_array[:]
+            missing_columns = [col for col in all_template_columns if col not in sorted_columns]
+            sorted_columns.extend(missing_columns)
+        else:
+            sort_key = str.lower if sort_type == "ALPHABETICAL" else custom_sort_output_columns
+            sorted_columns = sorted(all_template_columns, key=sort_key)
+        
+        if sort_order == "DESC":
+            sorted_columns.reverse()
+        self.output_columns = sorted_columns
+        '''
+        if sort_type == "ALPHABETICAL":
+            sort_key = str.lower
+        elif sort_type == "ALPHANUMERIC":
+            sort_key = custom_sort_output_columns
+        elif sort_type == "CUSTOM":
+            sorted_columns = output_columns_array
+            # Ensure all columns are included in case sorting_config is missing any
+            missing_columns = [col for col in all_template_columns if col not in sorted_columns]
+            sorted_columns.extend(missing_columns)
+        else:
+            # Default to Alphanumeric if sort_type is not recognized
+            sort_key = custom_sort_output_columns
+
+        if sort_type != "CUSTOM":
+            sorted_columns = sorted(all_template_columns, key=sort_key)
+
+        # Reverse if DESC is specified
+        if sort_order == "DESC":
+            sorted_columns.reverse()
+
+        # Set the sorted columns as output
+        self.output_columns = sorted_columns
+        '''
 
     def validate_template_columns(self, non_custom_columns, all_custom_columns):
         output_columns_set = set(self.output_columns)

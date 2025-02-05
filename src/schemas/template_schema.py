@@ -57,6 +57,16 @@ TEMPLATE_SCHEMA = {
             "items": FIELD_STRING_TYPE,
             "description": "The ordered list of columns to be contained in the output csv(default order: alphabetical)",
         },
+        "sortType": {
+            "type": "string",
+            "enum": ["ALPHABETICAL", "ALPHANUMERIC", "CUSTOM"],
+            "description": "Sorting type: ALPHABETICAL (sort by letters), ALPHANUMERIC (sort by numbers & letters), CUSTOM (user-defined order)."
+        },
+        "sortOrder": {
+            "type": "string",
+            "enum": ["ASC", "DESC"],
+            "description": "Sort order: ASC (ascending) or DESC (descending)."
+        },
         "pageDimensions": {
             **two_positive_integers,
             "description": "The dimensions(width, height) to which the page will be resized to before applying template",
