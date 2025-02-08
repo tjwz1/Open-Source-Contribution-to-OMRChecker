@@ -149,30 +149,6 @@ class Template:
         if sort_order == "DESC":
             sorted_columns.reverse()
         self.output_columns = sorted_columns
-        '''
-        if sort_type == "ALPHABETICAL":
-            sort_key = str.lower
-        elif sort_type == "ALPHANUMERIC":
-            sort_key = custom_sort_output_columns
-        elif sort_type == "CUSTOM":
-            sorted_columns = output_columns_array
-            # Ensure all columns are included in case sorting_config is missing any
-            missing_columns = [col for col in all_template_columns if col not in sorted_columns]
-            sorted_columns.extend(missing_columns)
-        else:
-            # Default to Alphanumeric if sort_type is not recognized
-            sort_key = custom_sort_output_columns
-
-        if sort_type != "CUSTOM":
-            sorted_columns = sorted(all_template_columns, key=sort_key)
-
-        # Reverse if DESC is specified
-        if sort_order == "DESC":
-            sorted_columns.reverse()
-
-        # Set the sorted columns as output
-        self.output_columns = sorted_columns
-        '''
 
     def validate_template_columns(self, non_custom_columns, all_custom_columns):
         output_columns_set = set(self.output_columns)
